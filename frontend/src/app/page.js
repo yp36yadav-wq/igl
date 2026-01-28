@@ -2,6 +2,7 @@ import React,{Fragment} from 'react'
 import Navbar from '@/components/Navbar'
 import Home from '@/components/Home'
 import Footer from '@/components/Footer'
+import Thankyou from '@/components/Thankyou'
 
 
 
@@ -13,6 +14,7 @@ const page = () => {
         
         <Home/>
         <Footer/>
+        <Thankyou/>
         
        
     </Fragment>
