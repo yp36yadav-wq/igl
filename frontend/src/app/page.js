@@ -1,16 +1,16 @@
-import React, { Fragment } from 'react'
-import Navbar from '@/components/Navbar'
-import Home from '@/components/Home'
+'use client';
+import { Fragment } from 'react';
+import Navbar from '@/components/Navbar';  // Adjust path
+import Home from '@/components/Hero';      // Your Hero component
+import Footer from '@/components/Footer';  // Adjust path
 
 
-
-const page = () => {
+export default function Page() {
   return (
     <Fragment>
       <Navbar />
-      <Home />
+      <Home />      
+      <Footer />
     </Fragment>
-  )
+  );
 }
-
-export default page;

@@ -1,35 +1,80 @@
-
+// server.js
 require('dotenv').config();
 const express = require('express');
-const app = express();
 const cors = require('cors');
-const ConnectDB = require('./config/db');   // DATABASE CONNECTION 
+const ConnectDB = require('./config/db');
+const employeeAuthRoutes = require('./routes/employeeAuth');
+const adminRoutes = require('./routes/adminRoutes');
+const appointmentRoutes = require('./routes/appointmentRoutes');
+
 const PORT = process.env.PORT || 4000;
 
+// Initialize Express app
+const app = express();
 
-// MIDDLE WARES
-app.use(express.json());
+// Middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
+
+// CORS configuration
 app.use(cors({
-    origin: 'http://localhost:3000', // Adjust this to your frontend's origin
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
-    contentType: 'application/json',
-    Authorization: `Bearer ${process.env.API_KEY}`,
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-
-// ROUTES
-app.use('/', (req, res) => {
-    res.send('API is running');
+// Routes
+app.get('/', (req, res) => {
+    res.json({
+        message: 'Employee Portal API is running ✅',
+        version: '1.0.0',
+        status: 'active'
+    });
 });
 
-// SERVER LISTENING
+// Auth routes
+app.use('/api/auth', employeeAuthRoutes);
+app.use('/api/admin', adminRoutes);
 
-ConnectDB().then(() => {
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
+
+// Appointments
+
+app.use('/api', appointmentRoutes);
+
+
+
+// 404 handler
+// app.use('*', (req, res) => {
+//     res.status(404).json({
+//         success: false,
+//         message: 'Route not found'
+//     });
+// });
+
+
+// Global error handler
+app.use((err, req, res, next) => {
+    console.error('Global Error:', err);
+    res.status(500).json({
+        success: false,
+        message: 'Something went wrong!'
     });
-}).catch((err) => {
-    console.error('Failed to connect to the database: (Server File Error)', err);
-}
-);
+});
+
+
+// Start Server
+const startServer = async () => {
+    try {
+        await ConnectDB();
+        app.listen(PORT, () => {
+            console.log(`🚀 Server running on http://localhost:${PORT}`);
+            console.log(`📊 Health check: http://localhost:${PORT}/`);
+        });
+    } catch (error) {
+        console.error('❌ Failed to start server:', error);
+        process.exit(1);
+    }
+};
+
+startServer();

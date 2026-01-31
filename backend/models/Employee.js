@@ -16,7 +16,7 @@ const employeeSchema = new mongoose.Schema({
         lowercase: true,
         unique: true,
     },
-    // 📧 Employee password
+    // 📧 Employee password  
     password: {
         type: String,
         required: true,

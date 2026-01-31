@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
   const [employeeId, setEmployeeId] = useState('');
@@ -8,15 +10,56 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    console.log('Login submitted:', { employeeId, email, password });
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsLoading(false);
-    // Add your login logic here
+    setError('');
+
+    try {
+      console.log('Login submitted:', { employeeId, email, password });
+
+      const response = await axios.post('http://localhost:4000/api/auth/login', {
+        employeeId,
+        email,
+        password
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        timeout: 10000 // 10 second timeout
+      });
+
+      if (response.data.success) {
+        // Store token in localStorage
+        localStorage.setItem('token', response.data.data.token);
+        localStorage.setItem('employee', JSON.stringify(response.data.data));
+
+        console.log('Login successful:', response.data.data);
+
+        // Redirect to dashboard
+        router.push('/dashboard');
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+
+      const errorMessage = error.response?.data?.message ||
+        error.message ||
+        'Login failed. Please try again.';
+
+      setError(errorMessage);
+
+      // Shake animation for error
+      const form = document.querySelector('form');
+      if (form) {
+        form.classList.add('shake');
+        setTimeout(() => form.classList.remove('shake'), 500);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -26,7 +69,7 @@ export default function LoginForm() {
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse" />
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-blue-400/20 to-indigo-400/20 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
-      
+
       <div className="relative w-full max-w-md bg-white/80 backdrop-blur-xl border border-white/40 rounded-3xl shadow-2xl p-8 sm:p-10 space-y-8 transform hover:scale-[1.02] transition-all duration-500">
         {/* Header */}
         <div className="text-center space-y-4">
@@ -44,6 +87,18 @@ export default function LoginForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-2xl p-4">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 text-red-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <p className="text-sm text-red-800">{error}</p>
+              </div>
+            </div>
+          )}
+
           {/* Employee ID */}
           <div className="relative">
             <label htmlFor="employeeId" className="block text-sm font-semibold text-gray-800 mb-2">
@@ -153,6 +208,17 @@ export default function LoginForm() {
           </p>
         </div>
       </div>
+
+      <style jsx>{`
+        form.shake {
+          animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+          20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+      `}</style>
     </div>
   );
 }

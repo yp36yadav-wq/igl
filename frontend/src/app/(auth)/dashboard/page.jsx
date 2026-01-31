@@ -1,300 +1,389 @@
+// components/AdminDashboard.jsx
 'use client';
-
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 export default function AdminDashboard() {
-  const [appointments, setAppointments] = useState([
-    {
-      id: 1,
-      name: 'Sarah Johnson',
-      email: 'sarah.j@email.com',
-      service: 'Dental Checkup',
-      date: '2026-02-15',
-      time: '09:00 AM',
-      status: 'confirmed',
-      phone: '+1 (555) 123-4567'
-    },
-    {
-      id: 2,
-      name: 'Michael Chen',
-      email: 'mchen@email.com',
-      service: 'Consultation',
-      date: '2026-02-15',
-      time: '10:30 AM',
-      status: 'pending',
-      phone: '+1 (555) 234-5678'
-    },
-    {
-      id: 3,
-      name: 'Emily Rodriguez',
-      email: 'emily.r@email.com',
-      service: 'Follow-up',
-      date: '2026-02-16',
-      time: '02:00 PM',
-      status: 'confirmed',
-      phone: '+1 (555) 345-6789'
-    },
-    {
-      id: 4,
-      name: 'James Wilson',
-      email: 'j.wilson@email.com',
-      service: 'Physical Therapy',
-      date: '2026-02-16',
-      time: '11:00 AM',
-      status: 'cancelled',
-      phone: '+1 (555) 456-7890'
-    },
-    {
-      id: 5,
-      name: 'Aisha Patel',
-      email: 'aisha.p@email.com',
-      service: 'Annual Checkup',
-      date: '2026-02-17',
-      time: '03:30 PM',
-      status: 'confirmed',
-      phone: '+1 (555) 567-8901'
-    },
-    {
-      id: 6,
-      name: 'David Kim',
-      email: 'dkim@email.com',
-      service: 'X-Ray',
-      date: '2026-02-18',
-      time: '01:00 PM',
-      status: 'pending',
-      phone: '+1 (555) 678-9012'
-    }
-  ]);
+  const [dashboard, setDashboard] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [error, setError] = useState(null);
+  const router = useRouter();
 
-  const [filter, setFilter] = useState('all');
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'confirmed':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-      case 'pending':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
-      case 'cancelled':
-        return 'bg-rose-100 text-rose-800 border-rose-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+  const fetchDashboard = async () => {
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        router.push('/login');
+        return;
+      }
+
+      const res = await axios.get('http://localhost:4000/api/admin/dashboard', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setDashboard(res.data.dashboard);
+      setError(null);
+    } catch (error) {
+      console.error('Dashboard fetch error:', error.response?.data);
+
+      if (error.response?.status === 403) {
+        // Unauthorized - not CEO/HR
+        setError('Access Denied: You do not have admin privileges');
+        setTimeout(() => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('employee');
+          router.push('/login');
+        }, 2000);
+      } else if (error.response?.status === 401) {
+        // Invalid token
+        localStorage.removeItem('token');
+        localStorage.removeItem('employee');
+        router.push('/login');
+      } else {
+        setError('Failed to load dashboard');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
-  const filteredAppointments = appointments.filter(apt => 
-    filter === 'all' ? true : apt.status === filter
-  );
-
-  const stats = {
-    total: appointments.length,
-    confirmed: appointments.filter(a => a.status === 'confirmed').length,
-    pending: appointments.filter(a => a.status === 'pending').length,
-    cancelled: appointments.filter(a => a.status === 'cancelled').length
+  const handleApprove = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(`http://localhost:4000/api/admin/appointments/${id}/approve`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchDashboard();
+      alert('✅ Appointment approved successfully!');
+    } catch (error) {
+      if (error.response?.status === 403) {
+        alert('❌ Access denied: Admin privileges required');
+      } else {
+        alert('❌ Error approving appointment');
+      }
+    }
   };
+
+  const handleDecline = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(`http://localhost:4000/api/admin/appointments/${id}/decline`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchDashboard();
+      alert('❌ Appointment declined!');
+    } catch (error) {
+      if (error.response?.status === 403) {
+        alert('❌ Access denied: Admin privileges required');
+      } else {
+        alert('❌ Error declining appointment');
+      }
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('employee');
+    router.push('/login');
+  };
+
+  // Error screen for unauthorized access
+  if (error && error.includes('Access Denied')) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center bg-white p-12 rounded-3xl shadow-2xl max-w-md">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="text-4xl">🚫</span>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h2>
+          <p className="text-gray-600 mb-6">
+            You do not have admin privileges to access this dashboard.
+          </p>
+          <p className="text-sm text-gray-500 mb-6">
+            Redirecting to login...
+          </p>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mb-4"></div>
+          <p className="text-xl text-gray-600 font-medium">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Rest of your component code remains the same...
+  const filteredAppointments = dashboard?.appointments.filter(appt => {
+    const matchesStatus = filterStatus === 'all' || appt.status === filterStatus;
+    const matchesSearch = appt.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      appt.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      appt.phone1.includes(searchQuery);
+    return matchesStatus && matchesSearch;
+  }) || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-5">
-          <div className="flex items-center justify-between">
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-8 py-6">
+          <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
-                Appointments Dashboard
+              <h1 className="text-3xl font-bold text-gray-900">
+                Admin Dashboard
               </h1>
-              <p className="text-slate-600 mt-1">Manage and track all appointments</p>
+              <p className="text-sm text-gray-500 mt-1">
+                Welcome back, {dashboard?.role.toUpperCase()} • {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              </p>
             </div>
-            <button className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-              + New Appointment
+            <button
+              onClick={handleLogout}
+              className="px-6 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              Logout
             </button>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-8 py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white p-6 rounded-2xl shadow-lg border border-blue-100 hover:shadow-xl transition-shadow duration-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-600 text-sm font-medium">Total</p>
-                <p className="text-3xl font-bold text-slate-900 mt-1">{stats.total}</p>
+                <p className="text-sm font-medium text-gray-600 mb-1">Pending</p>
+                <h3 className="text-3xl font-bold text-blue-600">{dashboard?.stats.pending || 0}</h3>
               </div>
-              <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <span className="text-2xl">⏳</span>
               </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-blue-600">
+              <span className="font-medium">Awaiting review</span>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 border border-emerald-200 shadow-sm hover:shadow-md transition-shadow">
+          <div className="bg-white p-6 rounded-2xl shadow-lg border border-green-100 hover:shadow-xl transition-shadow duration-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-emerald-700 text-sm font-medium">Confirmed</p>
-                <p className="text-3xl font-bold text-emerald-600 mt-1">{stats.confirmed}</p>
+                <p className="text-sm font-medium text-gray-600 mb-1">Approved</p>
+                <h3 className="text-3xl font-bold text-green-600">{dashboard?.stats.approved || 0}</h3>
               </div>
-              <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                <span className="text-2xl">✅</span>
               </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-green-600">
+              <span className="font-medium">Confirmed bookings</span>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 border border-amber-200 shadow-sm hover:shadow-md transition-shadow">
+          <div className="bg-white p-6 rounded-2xl shadow-lg border border-red-100 hover:shadow-xl transition-shadow duration-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-amber-700 text-sm font-medium">Pending</p>
-                <p className="text-3xl font-bold text-amber-600 mt-1">{stats.pending}</p>
+                <p className="text-sm font-medium text-gray-600 mb-1">Declined</p>
+                <h3 className="text-3xl font-bold text-red-600">{dashboard?.stats.declined || 0}</h3>
               </div>
-              <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                <span className="text-2xl">❌</span>
               </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-red-600">
+              <span className="font-medium">Rejected requests</span>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 border border-rose-200 shadow-sm hover:shadow-md transition-shadow">
+          <div className="bg-white p-6 rounded-2xl shadow-lg border border-indigo-100 hover:shadow-xl transition-shadow duration-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-rose-700 text-sm font-medium">Cancelled</p>
-                <p className="text-3xl font-bold text-rose-600 mt-1">{stats.cancelled}</p>
+                <p className="text-sm font-medium text-gray-600 mb-1">Total</p>
+                <h3 className="text-3xl font-bold text-indigo-600">{dashboard?.stats.total || 0}</h3>
               </div>
-              <div className="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-rose-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+              <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+                <span className="text-2xl">📊</span>
               </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-indigo-600">
+              <span className="font-medium">All appointments</span>
             </div>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-xl p-5 mb-6 border border-slate-200 shadow-sm">
-          <div className="flex items-center gap-3">
-            <span className="text-slate-700 font-medium">Filter:</span>
-            <button
-              onClick={() => setFilter('all')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                filter === 'all'
-                  ? 'bg-slate-900 text-white shadow-md'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setFilter('confirmed')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                filter === 'confirmed'
-                  ? 'bg-emerald-600 text-white shadow-md'
-                  : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-              }`}
-            >
-              Confirmed
-            </button>
-            <button
-              onClick={() => setFilter('pending')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                filter === 'pending'
-                  ? 'bg-amber-600 text-white shadow-md'
-                  : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-              }`}
-            >
-              Pending
-            </button>
-            <button
-              onClick={() => setFilter('cancelled')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                filter === 'cancelled'
-                  ? 'bg-rose-600 text-white shadow-md'
-                  : 'bg-rose-100 text-rose-700 hover:bg-rose-200'
-              }`}
-            >
-              Cancelled
-            </button>
+        {/* Filters and Search */}
+        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 mb-6">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="flex gap-2 w-full md:w-auto">
+              <button
+                onClick={() => setFilterStatus('all')}
+                className={`px-5 py-2.5 rounded-xl cursor-pointer font-medium transition-all duration-200 ${filterStatus === 'all'
+                    ? 'bg-indigo-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+              >
+                All ({dashboard?.stats.total || 0})
+              </button>
+              <button
+                onClick={() => setFilterStatus('pending')}
+                className={`px-5 py-2.5 rounded-xl cursor-pointer font-medium transition-all duration-200 ${filterStatus === 'pending'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+              >
+                Pending ({dashboard?.stats.pending || 0})
+              </button>
+              <button
+                onClick={() => setFilterStatus('approved')}
+                className={`px-5 py-2.5 rounded-xl cursor-pointer font-medium transition-all duration-200 ${filterStatus === 'approved'
+                    ? 'bg-green-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+              >
+                Approved ({dashboard?.stats.approved || 0})
+              </button>
+              <button
+                onClick={() => setFilterStatus('declined')}
+                className={`px-5 py-2.5 rounded-xl cursor-pointer font-medium transition-all duration-200 ${filterStatus === 'declined'
+                    ? 'bg-red-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+              >
+                Declined ({dashboard?.stats.declined || 0})
+              </button>
+            </div>
+            {/*             
+            <div className="relative w-full md:w-80">
+              <input
+                type="text"
+                placeholder="Search by name, email, or phone..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-5 py-2.5 pl-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              />
+              <span className="absolute left-4 top-3.5 text-gray-400 text-xl">🔍</span>
+            </div> */}
           </div>
         </div>
 
-        {/* Appointments List */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        {/* Appointments Table */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-slate-50 border-b border-slate-200">
+              <thead className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
                 <tr>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">Patient</th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">Contact</th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">Service</th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">Date & Time</th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">Status</th>
-                  <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">Actions</th>
+                  <th className="p-5 text-left font-semibold">Date & Time</th>
+                  <th className="p-5 text-left font-semibold">Employee Details</th>
+                  <th className="p-5 text-left font-semibold">Contact</th>
+                  <th className="p-5 text-left font-semibold">People</th>
+                  <th className="p-5 text-left font-semibold">Status</th>
+                  <th className="p-5 text-center font-semibold">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
-                {filteredAppointments.map((appointment) => (
-                  <tr key={appointment.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold">
-                          {appointment.name.split(' ').map(n => n[0]).join('')}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-slate-900">{appointment.name}</p>
-                          <p className="text-sm text-slate-500">ID: #{appointment.id}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="text-slate-700">{appointment.email}</p>
-                        <p className="text-sm text-slate-500">{appointment.phone}</p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                        {appointment.service}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="font-medium text-slate-900">{appointment.date}</p>
-                        <p className="text-sm text-slate-500">{appointment.time}</p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(appointment.status)}`}>
-                        {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <button className="p-2 hover:bg-blue-50 rounded-lg transition-colors group" title="View">
-                          <svg className="w-5 h-5 text-slate-600 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                          </svg>
-                        </button>
-                        <button className="p-2 hover:bg-emerald-50 rounded-lg transition-colors group" title="Edit">
-                          <svg className="w-5 h-5 text-slate-600 group-hover:text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                          </svg>
-                        </button>
-                        <button className="p-2 hover:bg-rose-50 rounded-lg transition-colors group" title="Delete">
-                          <svg className="w-5 h-5 text-slate-600 group-hover:text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
+              <tbody className="divide-y divide-gray-200">
+                {filteredAppointments.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="p-12 text-center">
+                      <div className="flex flex-col items-center justify-center text-gray-400">
+                        <span className="text-6xl mb-4">📭</span>
+                        <p className="text-xl font-medium text-gray-600">No appointments found</p>
+                        <p className="text-sm text-gray-500 mt-2">Try adjusting your filters or search query</p>
                       </div>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filteredAppointments.map((appt) => (
+                    <tr key={appt._id} className="hover:bg-gray-50 transition-colors duration-150">
+                      <td className="p-5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+                            <span className="text-xl">📅</span>
+                          </div>
+                          <div>
+                            <div className="font-semibold text-gray-900">
+                              {new Date(appt.appointmentDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </div>
+                            <div className="text-sm text-gray-600 font-medium">{appt.timeSlot}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-5">
+                        <div className="font-semibold text-gray-900">{appt.name}</div>
+                        <div className="text-sm text-gray-600">{appt.email}</div>
+                      </td>
+                      <td className="p-5">
+                        <div className="font-medium text-gray-900">{appt.phone1}</div>
+                        {appt.phone2 && (
+                          <div className="text-sm text-gray-600">{appt.phone2}</div>
+                        )}
+                      </td>
+                      <td className="p-5">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-lg">
+                          <span className="text-lg">👥</span>
+                          <span className="font-semibold text-gray-900">{appt.numberOfPeople}</span>
+                        </div>
+                      </td>
+                      <td className="p-5">
+                        <span className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold ${appt.status === 'pending' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+                            appt.status === 'approved' ? 'bg-green-100 text-green-800 border border-green-200' :
+                              'bg-red-100 text-red-800 border border-red-200'
+                          }`}>
+                          {appt.status === 'pending' && '⏳ '}
+                          {appt.status === 'approved' && '✅ '}
+                          {appt.status === 'declined' && '❌ '}
+                          {appt.status.charAt(0).toUpperCase() + appt.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="p-5">
+                        {appt.status === 'pending' ? (
+                          <div className="flex gap-2 justify-center">
+                            <button
+                              onClick={() => handleApprove(appt._id)}
+                              className="px-5 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-200 text-sm font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                            >
+                              ✅ Approve
+                            </button>
+                            <button
+                              onClick={() => handleDecline(appt._id)}
+                              className="px-5 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all duration-200 text-sm font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                            >
+                              ❌ Decline
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="text-center text-gray-400 text-sm font-medium">
+                            {appt.status === 'approved' ? '✓ Completed' : '✗ Rejected'}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
         </div>
+
+        {/* Footer Stats */}
+        <div className="mt-6 bg-white p-4 rounded-2xl shadow-lg border border-gray-200">
+          <p className="text-center text-sm text-gray-600">
+            Showing <span className="font-semibold text-gray-900">{filteredAppointments.length}</span> of <span className="font-semibold text-gray-900">{dashboard?.appointments.length || 0}</span> appointments
+          </p>
+        </div>
       </div>
     </div>
   );
-}
+} 
