@@ -18,15 +18,9 @@ export default function AdminDashboard() {
 
   const fetchDashboard = async () => {
     try {
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        router.push('/login');
-        return;
-      }
 
       const res = await axios.get('http://localhost:4000/api/admin/dashboard', {
-        headers: { Authorization: `Bearer ${token}` }
+      withCredentials: true,
       });
 
       setDashboard(res.data.dashboard);
@@ -38,13 +32,11 @@ export default function AdminDashboard() {
         // Unauthorized - not CEO/HR
         setError('Access Denied: You do not have admin privileges');
         setTimeout(() => {
-          localStorage.removeItem('token');
           localStorage.removeItem('employee');
           router.push('/login');
         }, 2000);
       } else if (error.response?.status === 401) {
         // Invalid token
-        localStorage.removeItem('token');
         localStorage.removeItem('employee');
         router.push('/login');
       } else {
@@ -57,9 +49,8 @@ export default function AdminDashboard() {
 
   const handleApprove = async (id) => {
     try {
-      const token = localStorage.getItem('token');
       await axios.put(`http://localhost:4000/api/admin/appointments/${id}/approve`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
+        withCredentials: true,
       });
       fetchDashboard();
       alert('✅ Appointment approved successfully!');
@@ -74,9 +65,9 @@ export default function AdminDashboard() {
 
   const handleDecline = async (id) => {
     try {
-      const token = localStorage.getItem('token');
+  
       await axios.put(`http://localhost:4000/api/admin/appointments/${id}/decline`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
+        withCredentials: true,
       });
       fetchDashboard();
       alert('❌ Appointment declined!');
@@ -90,7 +81,6 @@ export default function AdminDashboard() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
     localStorage.removeItem('employee');
     router.push('/login');
   };
@@ -98,7 +88,7 @@ export default function AdminDashboard() {
   // Error screen for unauthorized access
   if (error && error.includes('Access Denied')) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-red-50 to-gray-100 flex items-center justify-center">
         <div className="text-center bg-white p-12 rounded-3xl shadow-2xl max-w-md">
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <span className="text-4xl">🚫</span>
@@ -118,7 +108,7 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-600 mb-4"></div>
           <p className="text-xl text-gray-600 font-medium">Loading dashboard...</p>
@@ -137,7 +127,7 @@ export default function AdminDashboard() {
   }) || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-blue-50 to-indigo-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-8 py-6">
@@ -283,7 +273,7 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+              <thead className="bg-linear-to-r from-indigo-600 to-purple-600 text-white">
                 <tr>
                   <th className="p-5 text-left font-semibold">Date & Time</th>
                   <th className="p-5 text-left font-semibold">Employee Details</th>

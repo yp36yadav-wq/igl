@@ -18,9 +18,9 @@ export default function ThankYouPage() {
     }, []);
 
     return (
-        <div className="relative min-h-screen flex items-center justify-center overflow-x-hidden bg-gradient-to-br from-[#0b3d2e] via-[#0a2f23] to-[#083821]">
+        <div className="relative min-h-screen flex items-center justify-center overflow-x-hidden bg-linear-to-br from-[#0b3d2e] via-[#0a2f23] to-[#083821]">
             {/* Animated background pattern */}
-            <div className="absolute inset-0 bg-gradient-radial from-yellow-400/10 via-transparent to-transparent animate-pulse-slow" />
+            <div className="absolute inset-0 bg-linear-radial from-yellow-400/10 via-transparent to-transparent animate-pulse-slow" />
             
             {/* Floating particles */}
             {particles.map((particle) => (
@@ -36,12 +36,12 @@ export default function ThankYouPage() {
             ))}
 
             {/* Main Container */}
-            <div className="relative z-10 bg-white rounded-[30px] p-10 md:p-16 max-w-[500px] w-[90%] shadow-[0_50px_100px_rgba(0,0,0,0.3),0_0_0_1px_rgba(234,179,8,0.1),inset_0_1px_0_rgba(255,255,255,0.9)] animate-container-enter overflow-hidden">
+            <div className="relative z-10 bg-white rounded-[30px] p-10 md:p-16 max-w-125 w-[90%] shadow-[0_50px_100px_rgba(0,0,0,0.3),0_0_0_1px_rgba(234,179,8,0.1),inset_0_1px_0_rgba(255,255,255,0.9)] animate-container-enter overflow-hidden">
                 {/* Decorative corner */}
-                <div className="absolute -top-12 -right-12 w-[150px] h-[150px] bg-gradient-to-br from-yellow-400 to-yellow-300 rounded-full opacity-20 animate-corner-pulse" />
+                <div className="absolute -top-12 -right-12 w-37.5 h-37.5 bg-linear-to-br from-yellow-400 to-yellow-300 rounded-full opacity-20 animate-corner-pulse" />
 
                 {/* IGL Logo */}
-                <div className="w-[120px] h-[120px] mx-auto mb-8 bg-white rounded-full p-5 shadow-lg animate-logo-float">
+                <div className="w-30 h-30 mx-auto mb-8 bg-white rounded-full p-5 shadow-lg animate-logo-float">
                     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
                         {/* Sun rays */}
                         <path d="M100 30 L100 10" stroke="#FDB913" strokeWidth="6" strokeLinecap="round"/>
@@ -71,14 +71,14 @@ export default function ThankYouPage() {
                 </div>
 
                 {/* Success Icon */}
-                <div className="w-[100px] h-[100px] bg-gradient-to-br from-[#0b3d2e] to-[#0a5c3f] rounded-full mx-auto mb-8 flex items-center justify-center relative animate-icon-bounce shadow-[0_20px_40px_rgba(11,61,46,0.3),0_0_0_15px_rgba(234,179,8,0.1),inset_0_-5px_10px_rgba(0,0,0,0.2)]">
+                <div className="w-25 h-25 bg-linear-to-br from-[#0b3d2e] to-[#0a5c3f] rounded-full mx-auto mb-8 flex items-center justify-center relative animate-icon-bounce shadow-[0_20px_40px_rgba(11,61,46,0.3),0_0_0_15px_rgba(234,179,8,0.1),inset_0_-5px_10px_rgba(0,0,0,0.2)]">
                     <div className="w-12 h-12 relative">
                         <div className="absolute w-5 h-12 border-r-[5px] border-b-[5px] border-yellow-400 rotate-45 animate-checkmark-draw" />
                     </div>
                 </div>
 
                 {/* Title */}
-                <h1 className="text-5xl md:text-6xl font-black text-center mb-4 bg-gradient-to-r from-[#0b3d2e] to-[#0a5c3f] bg-clip-text text-transparent animate-title-slide tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <h1 className="text-5xl md:text-6xl font-black text-center mb-4 bg-linear-to-r from-[#0b3d2e] to-[#0a5c3f] bg-clip-text text-transparent animate-title-slide tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
                     Thank You!
                 </h1>
 
@@ -89,7 +89,7 @@ export default function ThankYouPage() {
                 </p>
 
                 {/* Decorative Divider */}
-                <div className="w-20 h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto my-8 rounded animate-divider-expand" />
+                <div className="w-20 h-1 bg-linear-to-r from-transparent via-yellow-400 to-transparent mx-auto my-8 rounded animate-divider-expand" />
 
                 {/* Info Text */}
                 <p className="text-sm text-gray-500 text-center leading-relaxed animate-info-fade">
@@ -103,9 +103,9 @@ export default function ThankYouPage() {
                 <div className="text-center mt-8">
                     <button
                         onClick={() => router.push('/')}
-                        className="relative inline-block bg-gradient-to-r from-yellow-400 to-yellow-300 text-[#0b3d2e] font-bold text-base px-10 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 active:translate-y-0 animate-button-pop overflow-hidden group"
+                        className="relative inline-block bg-linear-to-r from-yellow-400 to-yellow-300 text-[#0b3d2e] font-bold text-base px-10 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 active:translate-y-0 animate-button-pop overflow-hidden group"
                     >
-                        <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500" />
+                        <span className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500" />
                         <span className="relative z-10">Back to Home</span>
                     </button>
                 </div>

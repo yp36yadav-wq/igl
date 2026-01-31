@@ -269,7 +269,7 @@ const BookingModal = ({ isOpen, onClose }) => {
                     <div className="relative z-10">
                         <div className="flex items-center gap-2 mb-6">
                             <Sparkles className="text-orange-600 animate-spin-slow size-6" />
-                            <h2 className="text-2xl font-bold bg-linear-to-r from-yellow-600 to-green-700 bg-clip-text text-transparent">
+                            <h2 className="text-2xl font-bold text-gray-800">
                                 Appointment Details
                             </h2>
                         </div>
@@ -288,7 +288,7 @@ const BookingModal = ({ isOpen, onClose }) => {
                             </div>
 
                             <div className="flex items-start group hover:scale-105 transition-transform duration-300">
-                                <div className="bg-linear-to-br from-orange-500 to-orange-600 p-2 rounded-xl text-white mr-3 shadow-lg group-hover:shadow-orange-200 transition-shadow">
+                                <div className="bg-linear-to-br from-yellow-500 to-orange-500 p-2 rounded-xl text-white mr-3 shadow-lg group-hover:shadow-yellow-200 transition-shadow">
                                     <Clock size={20} />
                                 </div>
                                 <div>
@@ -344,7 +344,7 @@ const BookingModal = ({ isOpen, onClose }) => {
                                         <div className="p-2 bg-linear-to-br from-yellow-500 to-orange-500 rounded-xl">
                                             <CalendarIcon className="text-white size-6" />
                                         </div>
-                                        <h3 className="text-3xl font-bold bg-linear-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
+                                        <h3 className="text-3xl font-bold text-gray-800">
                                             Select a Date
                                         </h3>
                                     </div>
@@ -701,8 +701,8 @@ const BookingModal = ({ isOpen, onClose }) => {
                                     <div className={clsx(
                                         "inline-flex items-center justify-center mx-auto w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-3xl shadow-2xl mb-6 p-4 animate-pulse",
                                         submissionStatus === 'approved'
-                                            ? 'bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600'
-                                            : 'bg-gradient-to-br from-amber-500 via-amber-600 to-yellow-600'
+                                            ? 'bg-linear-to-br from-emerald-500 via-emerald-600 to-teal-600'
+                                            : 'bg-linear-to-br from-amber-500 via-amber-600 to-yellow-600'
                                     )}>
                                         <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center animate-spin-slow">
                                             {submissionStatus === 'approved' ? (
@@ -716,8 +716,8 @@ const BookingModal = ({ isOpen, onClose }) => {
                                     <h3 className={clsx(
                                         "text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight mb-4",
                                         submissionStatus === 'approved'
-                                            ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent'
-                                            : 'bg-gradient-to-r from-amber-600 via-yellow-600 to-orange-600 bg-clip-text text-transparent'
+                                            ? 'bg-linear-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent'
+                                            : 'bg-linear-to-r from-amber-600 via-yellow-600 to-orange-600 bg-clip-text text-transparent'
                                     )}>
                                         {submissionStatus === 'approved'
                                             ? '🎉 Appointment Auto-Approved!'
@@ -739,15 +739,15 @@ const BookingModal = ({ isOpen, onClose }) => {
                                     <div className={clsx(
                                         "group rounded-3xl p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 w-full",
                                         submissionStatus === 'approved'
-                                            ? 'bg-gradient-to-br from-emerald-50 to-teal-50/50 border-2 border-emerald-200/80'
-                                            : 'bg-gradient-to-br from-amber-50 to-yellow-50/50 backdrop-blur-sm border-2 border-amber-200/80'
+                                            ? 'bg-linear-to-br from-emerald-50 to-teal-50/50 border-2 border-emerald-200/80'
+                                            : 'bg-linear-to-br from-amber-50 to-yellow-50/50 backdrop-blur-sm border-2 border-amber-200/80'
                                     )}>
                                         <div className="flex items-start gap-4">
                                             <div className={clsx(
-                                                "flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 p-3",
+                                                "shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 p-3",
                                                 submissionStatus === 'approved'
-                                                    ? 'bg-gradient-to-br from-emerald-500 to-teal-600'
-                                                    : 'bg-gradient-to-br from-amber-500 to-yellow-500'
+                                                    ? 'bg-linear-to-br from-emerald-500 to-teal-600'
+                                                    : 'bg-linear-to-br from-amber-500 to-yellow-500'
                                             )}>
                                                 {submissionStatus === 'approved' ? (
                                                     <Check className="w-5 h-5 md:w-6 md:h-6 text-white" />
@@ -759,8 +759,8 @@ const BookingModal = ({ isOpen, onClose }) => {
                                                 <h4 className={clsx(
                                                     "text-lg md:text-xl font-bold mb-3",
                                                     submissionStatus === 'approved'
-                                                        ? 'bg-gradient-to-r from-emerald-900 to-teal-900 bg-clip-text text-transparent'
-                                                        : 'bg-gradient-to-r from-amber-900 to-yellow-900 bg-clip-text text-transparent'
+                                                        ? 'bg-linear-to-r from-emerald-900 to-teal-900 bg-clip-text text-transparent'
+                                                        : 'bg-linear-to-r from-amber-900 to-yellow-900 bg-clip-text text-transparent'
                                                 )}>
                                                     {submissionStatus === 'approved'
                                                         ? '✅ Appointment Confirmed'
@@ -780,21 +780,21 @@ const BookingModal = ({ isOpen, onClose }) => {
                                     {/* Right Card - Appointment Details (Always Same) */}
                                     <div className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-3xl p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
                                         <h4 className="text-xl md:text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-                                            <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-md p-3">
+                                            <div className="w-10 h-10 md:w-12 md:h-12 bg-linear-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-md p-3">
                                                 <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                                             </div>
                                             Appointment Details
                                         </h4>
                                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
-                                            <div className="text-center p-4 rounded-2xl bg-gradient-to-b from-slate-50 to-slate-100 hover:bg-slate-100 transition-colors">
+                                            <div className="text-center p-4 rounded-2xl bg-linear-to-b from-slate-50 to-slate-100 hover:bg-slate-100 transition-colors">
                                                 <span className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Date</span>
                                                 <span className="text-xl md:text-2xl font-black text-slate-900 block">{formatDate(selectedDate)}</span>
                                             </div>
-                                            <div className="text-center p-4 rounded-2xl bg-gradient-to-b from-emerald-50 to-emerald-100 hover:bg-emerald-100 transition-colors">
+                                            <div className="text-center p-4 rounded-2xl bg-linear-to-b from-emerald-50 to-emerald-100 hover:bg-emerald-100 transition-colors">
                                                 <span className="block text-xs font-semibold text-emerald-600 uppercase tracking-wide mb-2">Time</span>
                                                 <span className="text-xl md:text-2xl font-black text-slate-900 block">{selectedTime}</span>
                                             </div>
-                                            <div className="text-center p-4 rounded-2xl bg-gradient-to-b from-blue-50 to-blue-100 hover:bg-blue-100 transition-colors">
+                                            <div className="text-center p-4 rounded-2xl bg-linear-to-b from-blue-50 to-blue-100 hover:bg-blue-100 transition-colors">
                                                 <span className="block text-xs font-semibold text-blue-600 uppercase tracking-wide mb-2">People</span>
                                                 <span className="text-xl md:text-2xl font-black text-slate-900 block">{formData.numberOfPeople}</span>
                                             </div>
@@ -804,16 +804,16 @@ const BookingModal = ({ isOpen, onClose }) => {
 
                                 {/* Email Confirmation - Centered */}
                                 <div className="max-w-2xl mx-auto mb-8">
-                                    <div className="bg-gradient-to-r from-green-50 to-emerald-50/50 backdrop-blur-sm border border-green-200/80 rounded-3xl p-6 md:p-8 shadow-xl text-center group hover:shadow-2xl transition-all duration-500">
+                                    <div className="bg-linear-to-r from-green-50 to-emerald-50/50 backdrop-blur-sm border border-green-200/80 rounded-3xl p-6 md:p-8 shadow-xl text-center group hover:shadow-2xl transition-all duration-500">
                                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                            <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
+                                            <div className="w-14 h-14 md:w-16 md:h-16 bg-linear-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300">
                                                 <Mail className="w-6 h-6 md:w-7 md:h-7 text-white" />
                                             </div>
                                             <div>
                                                 <p className="text-base md:text-lg font-semibold text-green-800 mb-1">
                                                     Confirmation email sent to
                                                 </p>
-                                                <p className="text-lg md:text-xl font-black text-green-900 bg-gradient-to-r from-green-900 to-emerald-900 bg-clip-text text-transparent">
+                                                <p className="text-lg md:text-xl font-black text-green-900 bg-linear-to-r from-green-900 to-emerald-900 bg-clip-text text-transparent">
                                                     {formData.email}
                                                 </p>
                                             </div>
@@ -825,7 +825,7 @@ const BookingModal = ({ isOpen, onClose }) => {
                                 <div className="flex flex-col sm:flex-row gap-4 mt-auto pt-8 border-t border-slate-200">
                                     <button
                                         onClick={onClose}
-                                        className="group flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold py-4 px-6 md:px-8 rounded-2xl text-lg shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-emerald-500/30"
+                                        className="group flex-1 bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold py-4 px-6 md:px-8 rounded-2xl text-lg shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-emerald-500/30"
                                     >
                                         <span className="flex items-center justify-center gap-2">
                                             <Check className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

@@ -6,15 +6,30 @@ const ConnectDB = require('./config/db');
 const employeeAuthRoutes = require('./routes/employeeAuth');
 const adminRoutes = require('./routes/adminRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
+const csrf = require('csurf');
+const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
 
 const PORT = process.env.PORT || 4000;
 
 // Initialize Express app
 const app = express();
+const csrfProtection = csrf({ cookie: true });
 
 // Middleware
+app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 login attempts
+  message: 'Too many login attempts, please try again later',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 
 // CORS configuration
 app.use(cors({
@@ -34,23 +49,14 @@ app.get('/', (req, res) => {
 });
 
 // Auth routes
-app.use('/api/auth', employeeAuthRoutes);
-app.use('/api/admin', adminRoutes);
+app.use('/api/auth', employeeAuthRoutes , loginLimiter);
+app.use('/api/admin', adminRoutes, csrfProtection);
 
 
 // Appointments
 
 app.use('/api', appointmentRoutes);
 
-
-
-// 404 handler
-// app.use('*', (req, res) => {
-//     res.status(404).json({
-//         success: false,
-//         message: 'Route not found'
-//     });
-// });
 
 
 // Global error handler
