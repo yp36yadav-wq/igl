@@ -2,14 +2,14 @@ import React from 'react';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0b3d2e] text-white p-9 px-6">
+    <footer className="bg-black text-white p-9 px-6 border-t border-gray-800">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Connect With Us Section */}
         <div>
-          <h2 className="text-3xl font-bold text-yellow-400 mb-6">
+          <h2 className="text-3xl font-bold text-white mb-6">
             Connect With Us
           </h2>
-          <div className="w-16 h-1 bg-yellow-400 mb-8"></div>
+          <div className="w-16 h-1 bg-white mb-8"></div>
           
           <div className="space-y-6">
             {/* Email */}
@@ -20,7 +20,7 @@ export default function Footer() {
               </svg>
               <a 
                 href="mailto:support@iglsmartcard.com" 
-                className="text-lg transition-colors duration-300 group-hover:text-yellow-400"
+                className="text-lg transition-colors duration-300 group-hover:text-gray-400"
               >
                 support@iglsmartcard.com
               </a>
@@ -33,7 +33,7 @@ export default function Footer() {
               </svg>
               <a 
                 href="tel:+911204844761" 
-                className="text-lg transition-colors duration-300 group-hover:text-yellow-400"
+                className="text-lg transition-colors duration-300 group-hover:text-gray-400"
               >
                 +91-120-4844761
               </a>
@@ -44,7 +44,7 @@ export default function Footer() {
               <svg className="w-6 h-6 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"></path>
               </svg>
-              <p className="text-lg transition-colors duration-300 group-hover:text-yellow-400">
+              <p className="text-lg transition-colors duration-300 group-hover:text-gray-400">
                 IGL Bhawan, Plot No 4, Community Center, R. K. Puram, Sector 9, RK Puram, New Delhi, Delhi 110022
               </p>
             </div>
@@ -56,7 +56,7 @@ export default function Footer() {
               </svg>
               <a 
                 href="tel:+911146074607" 
-                className="text-lg transition-colors duration-300 group-hover:text-yellow-400"
+                className="text-lg transition-colors duration-300 group-hover:text-gray-400"
               >
                 +91-11-46074607
               </a>
@@ -66,10 +66,10 @@ export default function Footer() {
 
         {/* Our Location Section */}
         <div>
-          <h2 className="text-3xl font-bold text-yellow-400 mb-6">
+          <h2 className="text-3xl font-bold text-white mb-6">
             Our Location
           </h2>
-          <div className="w-16 h-1 bg-yellow-400 mb-8"></div>
+          <div className="w-16 h-1 bg-white mb-8"></div>
           
           <div className="rounded-lg overflow-hidden shadow-lg">
             <iframe
@@ -87,8 +87,8 @@ export default function Footer() {
       </div>
 
       {/* Copyright Section */}
-      <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-600 text-center">
-        <p className="text-gray-300">
+      <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-700 text-center">
+        <p className="text-gray-400">
           © {new Date().getFullYear()} IGL Smart Card. All rights reserved.
         </p>
       </div>
