@@ -4,6 +4,7 @@ import Hero from '@/components/Hero'
 import Footer from '@/components/Footer'
 import Thankyou from '@/components/Thankyou'
 import Helpline from '@/components/Helpline'
+import BookingModel from '@/components/BookingModel'
 
 
 
@@ -14,9 +15,11 @@ const page = () => {
         <Navbar/>
         
         <Hero/>
-        <Footer/>
+        
         <Thankyou/>
         <Helpline/>
+        <Footer/>
+        <BookingModel/>
         
        
     </Fragment>

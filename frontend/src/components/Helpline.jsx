@@ -15,12 +15,46 @@ const IGLLogo = () => (
 export default function HelplinePage() {
     const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
     const [submitted, setSubmitted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = (e) => {
+    // Replace 'YOUR_EMAIL_HERE' with your actual email address
+    const FORM_ENDPOINT = "https://formsubmit.co/yp36yadav@gmail.com";
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setSubmitted(true);
-        setTimeout(() => setSubmitted(false), 3000);
-        setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+        setIsSubmitting(true);
+
+        try {
+            const response = await fetch(FORM_ENDPOINT, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone,
+                    subject: formData.subject,
+                    message: formData.message,
+                    _subject: `New Helpline Message from ${formData.name}`,
+                    _template: "table"
+                })
+            });
+
+            if (response.ok) {
+                setSubmitted(true);
+                setTimeout(() => setSubmitted(false), 5000);
+                setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+            } else {
+                alert('Failed to send message. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again later.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleChange = (e) => {
@@ -70,7 +104,8 @@ export default function HelplinePage() {
                                         value={formData.name}
                                         onChange={handleChange}
                                         required
-                                        className="w-full px-4 py-3 border-2 text-black border-gray-200 rounded-xl focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 outline-none transition-all"
+                                        disabled={isSubmitting}
+                                        className="w-full px-4 py-3 border-2 text-black border-gray-200 rounded-xl focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                         placeholder="John Doe"
                                     />
                                 </div>
@@ -82,7 +117,8 @@ export default function HelplinePage() {
                                         value={formData.email}
                                         onChange={handleChange}
                                         required
-                                        className="w-full px-4 py-3 border-2 text-black border-gray-200 rounded-xl focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 outline-none transition-all"
+                                        disabled={isSubmitting}
+                                        className="w-full px-4 py-3 border-2 text-black border-gray-200 rounded-xl focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                         placeholder="john@example.com"
                                     />
                                 </div>
@@ -97,7 +133,8 @@ export default function HelplinePage() {
                                         value={formData.phone}
                                         onChange={handleChange}
                                         required
-                                        className="w-full px-4 py-3 border-2 text-black border-gray-200 rounded-xl focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 outline-none transition-all"
+                                        disabled={isSubmitting}
+                                        className="w-full px-4 py-3 border-2 text-black border-gray-200 rounded-xl focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                         placeholder="+91 98765 43210"
                                     />
                                 </div>
@@ -109,7 +146,8 @@ export default function HelplinePage() {
                                         value={formData.subject}
                                         onChange={handleChange}
                                         required
-                                        className="w-full px-4 py-3 border-2 text-black border-gray-200 rounded-xl focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 outline-none transition-all"
+                                        disabled={isSubmitting}
+                                        className="w-full px-4 py-3 border-2 text-black border-gray-200 rounded-xl focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                         placeholder="How can we help?"
                                     />
                                 </div>
@@ -122,21 +160,32 @@ export default function HelplinePage() {
                                     value={formData.message}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-4 py-3 border-2 text-black  border-gray-200 rounded-xl focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 outline-none transition-all resize-none flex-1 min-h-[150px]"
+                                    disabled={isSubmitting}
+                                    className="w-full px-4 py-3 border-2 text-black border-gray-200 rounded-xl focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 outline-none transition-all resize-none flex-1 min-h-[150px] disabled:opacity-50 disabled:cursor-not-allowed"
                                     placeholder="Tell us more about your inquiry..."
                                 ></textarea>
                             </div>
 
                             <button
                                 type="submit"
-                                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-[#0b3d2e] font-bold text-lg py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group"
+                                disabled={isSubmitting}
+                                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-[#0b3d2e] font-bold text-lg py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                             >
-                                <span>Send Message</span>
-                                <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                {isSubmitting ? (
+                                    <>
+                                        <div className="w-5 h-5 border-2 border-[#0b3d2e] border-t-transparent rounded-full animate-spin"></div>
+                                        <span>Sending...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>Send Message</span>
+                                        <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                    </>
+                                )}
                             </button>
 
                             {submitted && (
-                                <div className="flex items-center gap-2 text-green-600 bg-green-50 p-4 rounded-xl">
+                                <div className="flex items-center gap-2 text-green-600 bg-green-50 p-4 rounded-xl animate-in fade-in duration-300">
                                     <CheckCircle className="w-5 h-5" />
                                     <span className="font-semibold">Message sent successfully! We'll get back to you soon.</span>
                                 </div>
